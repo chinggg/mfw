@@ -386,8 +386,8 @@ static int __init mfw_mod_init(void)
 	       DEVICE_INTF_NAME, DEVICE_MAJOR_NUM);
 
 	/* Register netfilter inbound and outbound hooks */
-	nf_register_hook(&mfw_in_hook_ops);
-	nf_register_hook(&mfw_out_hook_ops);
+	nf_register_net_hook(&init_net, &mfw_in_hook_ops);
+	nf_register_net_hook(&init_net, &mfw_out_hook_ops);
 	return 0;
 }
 /* Add the (above) initialize function to the module */
@@ -422,8 +422,8 @@ static void __exit mfw_mod_cleanup(void)
 	printk(KERN_INFO "MiniFirewall: Device %s is unregistered\n",
 	       DEVICE_INTF_NAME);
 
-	nf_unregister_hook(&mfw_in_hook_ops);
-	nf_unregister_hook(&mfw_out_hook_ops);
+	nf_unregister_net_hook(&init_net, &mfw_in_hook_ops);
+	nf_unregister_net_hook(&init_net, &mfw_out_hook_ops);
 }
 /* Add the (above) cleanup function to the module */
 module_exit(mfw_mod_cleanup);
