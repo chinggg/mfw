@@ -102,12 +102,8 @@ mfw_general_filter(void *priv, struct sk_buff *skb,
 			continue;
 
 		printk(KERN_INFO "MiniFirewall: Drop packet "
-		       "src %d.%d.%d.%d : %d   dst %d.%d.%d.%d : %d   proto %d\n",
-		       IP_POS(s_ip, 3), IP_POS(s_ip, 2),
-		       IP_POS(s_ip, 1), IP_POS(s_ip, 0), s_port,
-		       IP_POS(d_ip, 3), IP_POS(d_ip, 2),
-		       IP_POS(d_ip, 1), IP_POS(d_ip, 0), d_port,
-		       iph->protocol);
+		      "src %pI4:%d   dst %pI4:%d   proto %d\n",
+		      &(s_ip), s_port, &(d_ip), d_port, iph->protocol);
 
 		return NF_DROP;
 	}
@@ -216,8 +212,10 @@ mfw_dev_read(struct file *file, char *buffer, size_t length, loff_t *offset)
 static void
 mfw_rule_add(struct mfw_rule *rule)
 {
+	struct list_head *lheadp;
 	struct rule_node *nodep;
 	nodep = (struct rule_node *)kmalloc(sizeof(struct rule_node), GFP_KERNEL);
+
 	if(nodep == NULL) {
 		printk(KERN_ALERT "MiniFirewall: Cannot add a new rule due to "
 		       "insufficient memory\n");
@@ -225,21 +223,16 @@ mfw_rule_add(struct mfw_rule *rule)
 	}
 	nodep->rule = *rule;
 
-	if(nodep->rule.in == 1) {
-		list_add_tail(&nodep->list, &In_lhead);
+	if(rule->in == 1) {
+		lheadp = &In_lhead;
 		printk(KERN_INFO "MiniFirewall: Add rule to the inbound list ");
-	}
-	else {
-		list_add_tail(&nodep->list, &Out_lhead);
+	} else {
+		lheadp = &Out_lhead;
 		printk(KERN_INFO "MiniFirewall: Add rule to the outbound list ");
-	}
-	printk(KERN_INFO
-	       "src %d.%d.%d.%d : %d   dst %d.%d.%d.%d : %d   proto %d\n",
-	       IP_POS(rule->s_ip, 3), IP_POS(rule->s_ip, 2),
-	       IP_POS(rule->s_ip, 1), IP_POS(rule->s_ip, 0), rule->s_port,
-	       IP_POS(rule->d_ip, 3), IP_POS(rule->d_ip, 2),
-	       IP_POS(rule->d_ip, 1), IP_POS(rule->d_ip, 0), rule->d_port,
-	       rule->proto);
+  }
+	list_add_tail(&nodep->list, lheadp);
+	printk(KERN_INFO "src %pI4:%d   dst %pI4:%d   proto %d\n",
+	    &(rule->s_ip), rule->s_port, &(rule->d_ip), rule->d_port, rule->proto);
 }
 
 
@@ -270,15 +263,9 @@ mfw_rule_del(struct mfw_rule *rule)
 		   node->rule.proto == rule->proto) {
 			list_del(lp->next);
 			kfree(node);
-			printk(KERN_INFO "MiniFirewall: Remove rule "
-			       "src %d.%d.%d.%d : %d   dst %d.%d.%d.%d : %d   "
-			       "proto %d\n",
-			       IP_POS(rule->s_ip, 3), IP_POS(rule->s_ip, 2),
-			       IP_POS(rule->s_ip, 1), IP_POS(rule->s_ip, 0),
-			       rule->s_port,
-			       IP_POS(rule->d_ip, 3), IP_POS(rule->d_ip, 2),
-			       IP_POS(rule->d_ip, 1), IP_POS(rule->d_ip, 0),
-			       rule->d_port, rule->proto);
+			printk(KERN_INFO "MiniFirewall: Remove rule ");
+			printk(KERN_INFO "src %pI4:%d   dst %pI4:%d   proto %d\n",
+			    &(rule->s_ip), rule->s_port, &(rule->d_ip), rule->d_port, rule->proto);
 			break;
 		}
 	}
