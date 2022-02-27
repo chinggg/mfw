@@ -96,12 +96,12 @@ view_rules(void)
 		printf("%-15s  ", inet_ntoa(addr));
 		addr.s_addr = rule->s_mask;
 		printf("%-15s  ", inet_ntoa(addr));
-		printf("%-5d  ", ntohs(rule->s_port));
+		printf("%-5d  ", rule->s_port);
 		addr.s_addr = rule->d_ip;
 		printf("%-15s  ", inet_ntoa(addr));
 		addr.s_addr = rule->d_mask;
 		printf("%-15s  ", inet_ntoa(addr));
-		printf("%-5d  ", ntohs(rule->d_port));
+		printf("%-5d  ", rule->d_port);
 		printf("%-3d\n", rule->proto);
 	}
 	free(buffer);
@@ -206,7 +206,7 @@ parse_arguments(int argc, char **argv, struct mfw_ctl *ret_ctl)
 				printf("Invalid source port number\n");
 				return -1;
 			}
-			ctl.rule.s_port = htons((uint16_t)lnum);
+			ctl.rule.s_port = (uint16_t)lnum;
 			break;
 		case 'd':	/* Destination ip address */
 			if(inet_aton(optarg, &addr) == 0) {
@@ -228,7 +228,7 @@ parse_arguments(int argc, char **argv, struct mfw_ctl *ret_ctl)
 				printf("Invalid destination port number\n");
 				return -1;
 			}
-			ctl.rule.d_port = htons((uint16_t)lnum);
+			ctl.rule.d_port = (uint16_t)lnum;
 			break;
 		case 'c':	/* Protocol number */
 			lnum = parse_number(optarg, 0, UCHAR_MAX);
