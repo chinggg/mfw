@@ -1,3 +1,4 @@
+#include <netinet/in.h>
 #include <stdio.h>
 #include <getopt.h>
 #include <stdlib.h>
@@ -28,7 +29,7 @@ print_usage(void)
 	       "-d --d_ip IPADDR    destination ip address\n"
 	       "-n --d_mask MASK    destination mask\n"
 	       "-q --d_port PORT    destination port\n"
-	       "-c --proto PROTO    protocol\n"
+	       "-c --proto PROTO    protocol (TCP: 6, UDP: 17, ICMP: 1)\n"
 	       "-a --add            add a rule\n"
 	       "-r --remove         remove a rule\n"
 	       "-v --view           view rules\n"
@@ -231,11 +232,11 @@ parse_arguments(int argc, char **argv, struct mfw_ctl *ret_ctl)
 			break;
 		case 'c':	/* Protocol number */
 			lnum = parse_number(optarg, 0, UCHAR_MAX);
-			if(lnum < 0 ||
-			   !(lnum == 0 ||
+			if(!(lnum == 0 ||
 			     lnum == IPPROTO_TCP ||
-			     lnum == IPPROTO_UDP)) {
-				printf("Invalid protocol number\n");
+			     lnum == IPPROTO_UDP ||
+					 lnum == IPPROTO_ICMP)) {
+				printf("Invalid protocol number %d\n", (uint8_t)lnum);
 				return -1;
 			}
 			ctl.rule.proto = (uint8_t)lnum;
