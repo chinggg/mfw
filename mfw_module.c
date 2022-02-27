@@ -20,6 +20,7 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Sucha Supittayapornpong <sucha.cpe@gmail.com>");
+MODULE_AUTHOR("chinggg <liuchinggg@gmail.com>");
 
 
 /* List node containing a filter rule */
