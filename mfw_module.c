@@ -61,7 +61,7 @@ mfw_general_filter(void *priv, struct sk_buff *skb,
 		return NF_ACCEPT;
 
 	/* Get IP header and extract information */
-	iph = (struct iphdr *)skb_network_header(skb);
+	iph = ip_hdr(skb);
 	if(iph == NULL)
 		return NF_ACCEPT;
 
@@ -69,14 +69,14 @@ mfw_general_filter(void *priv, struct sk_buff *skb,
 	s_ip = iph->saddr;
 	d_ip = iph->daddr;
 	if(proto == IPPROTO_UDP) {
-		udph = (struct udphdr *)(skb_transport_header(skb));
-		s_port = udph->source;
-		d_port = udph->dest;
+		udph = udp_hdr(skb);
+		s_port = ntohs(udph->source);
+		d_port = ntohs(udph->dest);
 	}
 	else if(proto == IPPROTO_TCP) {
-		tcph = (struct tcphdr *)(skb_transport_header(skb));
-		s_port = tcph->source;
-		d_port = tcph->dest;
+		tcph = tcp_hdr(skb);
+		s_port = ntohs(tcph->source);
+		d_port = ntohs(tcph->dest);
 	}
 	else
 		return NF_ACCEPT;
