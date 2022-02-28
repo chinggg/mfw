@@ -12,6 +12,7 @@
 #include <linux/tcp.h>
 #include <linux/udp.h>
 
+#include "linux/gfp.h"
 #include "mfw.h"
 
 #define EQUAL_NET_ADDR(ip1, ip2, mask) (((ip1 ^ ip2) & mask) == 0)
@@ -218,7 +219,7 @@ mfw_rule_add(struct mfw_rule *rule)
 {
 	struct list_head *lheadp;
 	struct rule_node *nodep;
-	nodep = (struct rule_node *)kmalloc(sizeof(struct rule_node), GFP_KERNEL);
+	nodep = (struct rule_node *)kmalloc(sizeof(struct rule_node), GFP_ATOMIC);
 
 	if(nodep == NULL) {
 		printk(KERN_ALERT "MiniFirewall: Cannot add a new rule due to "
@@ -353,7 +354,7 @@ static int __init mfw_mod_init(void)
 
 	/* Initialize static global variables */
 	Device_open = 0;
-	Buffer = (char *)kmalloc(sizeof(struct mfw_ctl *), GFP_KERNEL);
+	Buffer = (char *)kmalloc(sizeof(struct mfw_ctl), GFP_ATOMIC);
 	if(Buffer == NULL) {
 		printk(KERN_ALERT
 		       "MiniFirewall: Fails to start due to out of memory\n");
