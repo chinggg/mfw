@@ -87,7 +87,7 @@ mfw_general_filter(void *priv, struct sk_buff *skb,
 	/* Loop through the rule list and perform exact match */
 	listh = rule_list_head;
 	list_for_each_entry(node, listh, list) {
-		r = &node->rule;
+		r = &(node->rule);
 
 		if(!IGNORE(r->proto) && (r->proto != iph->protocol))
 			continue;
@@ -98,12 +98,13 @@ mfw_general_filter(void *priv, struct sk_buff *skb,
 		if(!IGNORE(r->s_port) && (r->s_port != s_port))
 			continue;
 
-		if(!IGNORE(r->d_ip) && !EQUAL_NET_ADDR(r->d_ip, d_ip, r->s_mask))
+		if(!IGNORE(r->d_ip) && !EQUAL_NET_ADDR(r->d_ip, d_ip, r->d_mask))
 			continue;
 
 		if(!IGNORE(r->d_port) && (r->d_port != d_port))
 			continue;
 
+    printk(KERN_INFO "%pI4 %pI4 %d %d\n", &(r->d_ip), &(r->d_mask), r->d_port, r->proto);
 		printk(KERN_INFO "MiniFirewall: Drop packet "
 		      "src %pI4:%d   dst %pI4:%d   proto %d\n",
 		      &(s_ip), s_port, &(d_ip), d_port, iph->protocol);
@@ -395,14 +396,14 @@ static void __exit mfw_mod_cleanup(void)
 	kfree(Buffer);
 
 	list_for_each_entry_safe(nodep, ntmp, &In_lhead, list) {
-		list_del(&nodep->list);
+		list_del(&(nodep->list));
 		kfree(nodep);
 		printk(KERN_INFO "MiniFirewall: Deleted inbound rule %p\n",
 		       nodep);
 	}
 
 	list_for_each_entry_safe(nodep, ntmp, &Out_lhead, list) {
-		list_del(&nodep->list);
+		list_del(&(nodep->list));
 		kfree(nodep);
 		printk(KERN_INFO "MiniFirewall: Deleted outbound rule %p\n",
 		       nodep);
