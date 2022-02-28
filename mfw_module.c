@@ -78,8 +78,11 @@ mfw_general_filter(void *priv, struct sk_buff *skb,
 		s_port = ntohs(tcph->source);
 		d_port = ntohs(tcph->dest);
 	}
-	else
-		return NF_ACCEPT;
+	else if(proto == IPPROTO_ICMP) {
+		s_port = 0;
+		d_port = 0;
+	}
+	else return NF_ACCEPT;
 
 	/* Loop through the rule list and perform exact match */
 	listh = rule_list_head;
