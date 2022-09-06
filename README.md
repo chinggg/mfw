@@ -1,4 +1,7 @@
 # MiniFirewall
+
+This simple firewall is a course project aiming at learning [Linux Kernel Module Programming](https://sysprog21.github.io/lkmpg/) and [netfilter](https://www.netfilter.org/), of which most code is based on https://github.com/ss-sucha/MiniFirewall, with some fixes and improvements.
+
 ## Introduction
 MiniFirewall is a simple Firewall system for Linux operating system. It employs an exact-match algorithm to filter TCP and UDP packets according to user-specified rules.
 
